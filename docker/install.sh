@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Update the package list and install basic dependencies
-sudo apk update && sudo apk upgrade
+# Update the package list and upgrade the system
+sudo apt update && sudo apt upgrade -y
 
-# Install Ruby, Bundler, and basic packages
-sudo apk add --no-cache ruby=3.3.5-alpine tzdata
+# Install Ruby and basic dependencies
+sudo apt install -y ruby-full tzdata build-essential
 
 # Install Bundler with a specific version
 gem install bundler -v 2.4.13
@@ -14,24 +14,23 @@ bundle config set --local deployment 'true'
 bundle config set --local without 'development test'
 
 # Install additional dependencies for build and runtime
-sudo apk add --no-cache \
-  alpine-sdk \
-  nodejs=~20.15 \
+sudo apt install -y \
+  libpq-dev \
+  libmariadb-dev \
+  libarchive-dev \
+  libgl1-mesa-dev \
+  libglfw3-dev \
+  nodejs \
   npm \
-  postgresql-dev \
-  mariadb-dev \
-  libarchive \
-  mesa-gl \
-  glfw \
+  redis-server \
   file \
-  s6-overlay \
-  redis
+  postgresql
 
 # Install Foreman for runtime process management
 gem install foreman
 
 # Install Node.js and Yarn
-npm install --global corepack
+sudo npm install --global corepack
 corepack enable yarn
 
 # Install project dependencies (Ensure package.json and yarn.lock are in the current directory)
