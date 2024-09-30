@@ -7,11 +7,8 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y ruby-full tzdata build-essential
 
 # Install Bundler with a specific version
-gem install bundler -v 2.4.13
-
-# Set Bundler configuration
-bundle config set --local deployment 'true'
-bundle config set --local without 'development test'
+gem install --user-install bundler -v 2.4.13
+export PATH=$HOME/.gem/ruby/$(ruby -e 'puts RUBY_VERSION').0/bin:$PATH
 
 # Install additional dependencies for build and runtime
 sudo apt install -y \
@@ -26,10 +23,12 @@ sudo apt install -y \
   file \
   postgresql
 
-# Install Foreman for runtime process management
-gem install foreman
+# Ensure Node.js is up-to-date (remove the old version and install a new one)
+sudo apt remove -y nodejs
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
 
-# Install Node.js and Yarn
+# Install Corepack and enable Yarn
 sudo npm install --global corepack
 corepack enable yarn
 
@@ -38,6 +37,9 @@ yarn install
 
 # Install Ruby gems (Ensure Gemfile and Gemfile.lock are in the current directory)
 bundle install
+
+# Install Foreman for runtime process management
+gem install --user-install foreman
 
 # Precompile assets for the application
 DATABASE_URL="nulldb://user:pass@localhost/db" \
