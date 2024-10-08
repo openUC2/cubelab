@@ -246,10 +246,10 @@ en:
       unrelated_tag_count:
         one: "%{count} unrelated tag hidden"
         other: "%{count} unrelated tags hidden"
-    tagline: Helping you keep track of your 3d print files
+    tagline: Helping you keep track of your optics files
     tags_card:
       skip_tags: Skip tag list
-    title: Manyfold
+    title: openUC2 - Parts Library
   errors:
     messages:
       already_confirmed: was already confirmed, please try signing in

@@ -64,7 +64,7 @@ jobs:
           build-args: |
             APP_VERSION=${{ steps.docker_meta.outputs.version }}
             GIT_SHA=${{ github.sha }}
-
+            
   solo:
     runs-on: ubuntu-latest
     permissions:

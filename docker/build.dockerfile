@@ -22,6 +22,8 @@ COPY .ruby-version .
 COPY Gemfile* ./
 RUN bundle install
 
+# force the copy of the whole project to avoid cache invalidation
+RUN echo "COPY . ." >> Dockerfile
 COPY . .
 RUN \
   DATABASE_URL="nulldb://user:pass@localhost/db" \
