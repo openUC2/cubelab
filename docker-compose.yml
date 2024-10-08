@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  app:
+    image: openuc2verse
+    ports:
+      - 3214:3214
+    volumes:
+      - /Users/bene/Downloads/UC2-GIT-master/CAD/RAW/STL:/libraries
+    environment:
+      PUID: 1000 # The ID of the user the app will run as
+      PGID: 1000 # The ID of the group the app will run as
+      SECRET_KEY_BASE: a_nice_long_random_string
+      REDIS_URL: redis://redis:6379/1
+
+      # Database connection details; we recommend using a separate PostgreSQL
+      # server for best performance
+      DATABASE_ADAPTER: postgresql
+      DATABASE_HOST: postgres
+      DATABASE_USER: manyfold
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: manyfold
+
+      # "mysql2" is also available, and you can specify all details in a
+      # single DATABASE_URL variable if you prefer:
+      # DATABASE_URL: {adapter}://{user}:{password}@{host}/{name}
+
+      # You can also use the "sqlite3" adapter if you don't want to run a separate
+      # database server. If you do, specify a path to your database file in DATABASE_NAME,
+      # and make sure it's on a persistent volume! Host, user and password aren't required.
+      # DATABASE_URL: sqlite3:/config/manyfold.sqlite3
+
+      # For details of other optional environment variables, including features such
+      # as multiuser mode, visit https://manyfold.app/sysadmin/configuration.html
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - manyfold
+    links:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: manyfold
+      POSTGRES_PASSWORD: password
+    restart: on-failure
+    networks:
+      - manyfold
+
+  redis:
+    image: redis:7
+    restart: on-failure
+    networks:
+      - manyfold
+
+volumes:
+  db_data:
+
+
+networks:
+  manyfold:
