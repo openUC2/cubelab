@@ -46,7 +46,7 @@ jobs:
       - name: Build and push container image to registry
         uses: docker/build-push-action@v2
         with: #sudo docker build --file ./docker/manyfold.dockerfile --build-arg APP_VERSION=test --build-arg GIT_SHA=00 --tag cubelab .
-          context: docker
+          context: .
           file: ./docker/manyfold.dockerfile
           push: true
           platforms: linux/amd64
