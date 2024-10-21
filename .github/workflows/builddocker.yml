@@ -53,12 +53,11 @@ jobs:
           file: ./docker/manyfold.dockerfile
           push: true
           platforms: linux/amd64
-          cache-from: type=registry,ref=ghcr.io/${{ env.IMAGE_NAME }}-${{ env.ARCH }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ env.IMAGE_NAME }}:latest
           cache-to: type=inline
-          build-args: |
-            APP_VERSION=test
-            GIT_SHA=00
-          tags: ghcr.io/${{ env.IMAGE_NAME }}-${{ env.ARCH }}:latest
+          tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BUILD_DATE=${{ github.run_id }}
+            APP_VERSION=test
+            GIT_SHA=00
