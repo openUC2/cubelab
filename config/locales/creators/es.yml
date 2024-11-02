@@ -20,8 +20,9 @@ es:
     get_creator:
       unknown: Desconocido
     index:
-      actions_heading: Acciones
       skip_creators: Omitir lista de creadores
+    show:
+      edit: Editar Perfil de Creador
     unassigned:
       caption: Todos los modelos sin creador asignado.
       name: Sin asignar

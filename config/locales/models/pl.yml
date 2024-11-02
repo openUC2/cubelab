@@ -39,10 +39,9 @@ pl:
       previous: Poprzednia
       select_slide: Wybierz obraz do wyświetlenia
       slide_label: "%{name} (%{index} z %{count})"
-    index:
-      actions_heading: Akcje
-      bulk_edit: Edycja zbiorcza
-      no_results_html: Przepraszamy, nie mogliśmy znaleźć niczego do pokazania! Spróbuj zmienić filtry lub wyszukiwane hasła albo przesłać kilka modeli.
+    list:
+      bulk_edit: Edytuj Wszystkie Modele
+      no_results_html: Przepraszamy, nie mogliśmy znaleźć niczego do pokazania! Spróbuj zmienić filtry lub wyszukiwane hasło albo przesłać kilka modeli.
       skip_models: Pomiń listę modeli
     merge:
       success: Modele zostały pomyślnie połączone.
@@ -60,6 +59,12 @@ pl:
     scan:
       success: Rozpoczęto skanowanie modelów
     show:
+      download:
+        file_type:
+        label:
+        menu_header:
+        supported:
+        unsupported:
       files: Pliki
       files_card:
         bulk_edit: Edytuj wszystkie pliki

@@ -3,16 +3,16 @@ es:
   activerecord:
     attributes:
       collection:
-        caption: Subtitulo
+        caption: Subtítulo
         collection_id: Colección
         name: Nombre
         notes: Notas
       creator:
-        caption: Subtitulo
+        caption: Subtítulo
         name: Nombre
         notes: Notas
       library:
-        caption: Subtitulo
+        caption: Subtítulo
         icon: Icono
         name: Nombre
         notes: Notas
@@ -29,7 +29,7 @@ es:
       link:
         url: Enlace
       model:
-        caption: Subtitulo
+        caption: Subtítulo
         collection_id: Colección
         creator_id: Creador
         library_id: Biblioteca
@@ -38,15 +38,16 @@ es:
         notes: Descripción
         path: Ruta
         preview_file: Vista previa
+        sensitive: Contenido Sensible
         tags: Etiquetas
       model_file:
-        caption: Subtitulo
+        caption: Subtítulo
         digest: Digest
         filename: Archivo
         model_id: Modelo
         notes: Notas
         presupported: Soporte predefinido
-        presupported_version: Versión soporte predefinido
+        presupported_version: Versión de soporte predefinido
         printed: Impreso
         size: Tamaño del archivo
         unsupported_version: Versión sin soporte
@@ -172,7 +173,6 @@ es:
       description: Las entradas se borran después de %{retention_period}.
       message: Mensaje
       name: Nombre
-      sidekiq: Sidekiq
       time: Cuando
       title: Actividad reciente
   activity_helper:
@@ -199,10 +199,6 @@ es:
       permissions: 'Compartiendo
 
         '
-    content_header:
-      sort:
-        name: Ordenar por nombre
-        time: Ordenar por tiempo
     demo_mode: Esta instancia es una demo. No puedes añadir ni eliminar modelos, pero puedes hacer todo lo demás.
     filters_card:
       missing_tags: Etiquetas vacías
@@ -222,12 +218,15 @@ es:
       community_heading: Comunidad
       development_heading: Desarrollo
       issues: Problemas
-      logo: Logo
       open_source_html: Open Source bajo <a href="https://github.com/manyfold3d/manyfold/blob/main/LICENSE.md" target="_blank" rel="license">licencia MIT</a>.
       social: Social
       sponsor: Colaborar
       stats_heading: Estadísticas
       version: Versión
+    link_fields:
+      url:
+        delete: Borrar
+        placeholder: Cualquier web relacionada
     links_form:
       add: añadir otro enlace
     navbar:
@@ -246,6 +245,10 @@ es:
       search: Buscar
       settings: Ajustes
       upload: Cargar
+    order_buttons:
+      sort:
+        name: Ordenar por nombre
+        time: Ordenar por tiempo
     tag_list:
       unrelated_tag_count:
         one: "%{count} etiqueta no relacionada oculta"
@@ -254,9 +257,26 @@ es:
     tags_card:
       skip_tags: Saltar lista de etiquetas
     title: Manyfold
-  follow_button:
-    follow: Seguir a %{name}
-    unfollow: Dejar de seguir a %{name}
+  follow_button_component:
+    follow: Seguir %{name}
+    unfollow: Dejar de seguir %{name}
+  follows:
+    follow_remote_actor:
+      followed: Siguiendo a %{actor} correctamente.
+    new:
+      help: Puedes seguir creadores, colecciones o modelos públicos en otro servidor de Manyfold; ¡de hecho, cualquier cuenta pública en el Fediverse! Solo ingresa el nombre de la cuenta en el cuadro de búsqueda.
+      no_results: Lo siento, no encontré nada para "%{query}". ¿Es una cuenta o URL de ActivityPub válida?
+      results: Resultados de la búsqueda
+      search:
+        placeholder: Introduzca una cuenta Fediverse o URL, por ejemplo admin@try.manyfold.app
+        submit: Buscar
+      title: Sigue el Fediverse
+    remote_follow:
+      help: No es necesario tener una cuenta en este servidor para seguir a %{name}. Escribe tu nombre de usuario aquí y te llevaremos de vuelta para completar el proceso
+      no_results_html: No se pudo encontrar tu cuenta de inicio; ¿la escribiste correctamente?
+      placeholder: Tu nombre de usuario de Fediverse, por ejemplo manyfold@3dp.chat
+      submit: Llévame a casa
+      title: Seguir %{name}
   general:
     delete: Borrar
     download: Descargar
@@ -271,8 +291,12 @@ es:
       recent_activity: Actividad reciente
       search:
         placeholder: "¿Qué busca?"
+        submit: Buscar
       update_actor: actualizado por %{name} hace %{time}
   jobs:
+    activity:
+      creator_added_model:
+        comment: 'Acabo de añadir un nuevo modelo: ["%{model_name}"](%{url})'
     analysis:
       analyse_model_file:
         detect_duplicates: Buscando ficheros duplicados
@@ -304,7 +328,7 @@ es:
       current_page: Página actual
       label: Ir a la página %{page}
     paginator:
-      label:
+      label: Navegación por la página
     prev_page:
       label: Ir a la página anterior
   layouts:
@@ -313,6 +337,8 @@ es:
         danger: Peligro
         info: Información
       skip_to_content: Ir al contenido principal
+    card_list_page:
+      actions_heading: Acciones
   licenses:
     CC-BY-40: Creative Commons - Reconocimiento
     CC-BY-NC-40: Creative Commons - Reconocimiento - No Comercial

@@ -1,6 +1,5 @@
 class CreatorsController < ApplicationController
-  include Filterable
-  include TagListable
+  include ModelListable
   include Permittable
 
   before_action :get_creator, except: [:index, :new, :create]
@@ -33,7 +32,10 @@ class CreatorsController < ApplicationController
   end
 
   def show
-    redirect_to models_path(creator: params[:id])
+    @models = policy_scope(Model).where(creator: @creator)
+    prepare_model_list
+    @additional_filters = {creator: @creator}
+    render layout: "card_list_page"
   end
 
   def new
@@ -51,7 +53,7 @@ class CreatorsController < ApplicationController
 
   def create
     authorize Creator
-    @creator = Creator.create(creator_params)
+    @creator = Creator.create(creator_params.merge(Creator.caber_owner(current_user)))
     if session[:return_after_new]
       redirect_to session[:return_after_new] + "?new_creator=#{@creator.to_param}", notice: t(".success")
       session[:return_after_new] = nil

@@ -1,3 +1,10 @@
+<% content_for :head do %>
+  <%= tag.meta property: "og:type", content: "website" %>
+  <%= tag.meta property: "og:image", content: model_model_file_url(@model, @model.preview_file, format: @model.preview_file.extension) if @model.preview_file&.is_image? && !@model.sensitive %>
+  <%= tag.meta name: "description", content: truncate(sanitize(@model.notes), length: 80) if @model.notes.present? %>
+  <%= tag.meta name: "fediverse:creator", content: "@#{@model.creator.actor.at_address}" if @model.creator %>
+<% end %>
+
 <% content_for :page_header do %>
   <h1>
     <a data-field="model[name]" data-path="<%= model_path(@model) %>" contenteditable=true>
@@ -34,7 +41,7 @@
       <% if @model.creator %>
         <tr>
           <td><%= icon "person", Creator.model_name.human %></td>
-          <td><%= link_to @model.creator.name, models_path((@filters || {}).merge(creator: @model.creator)) %></td>
+          <td><%= link_to @model.creator.name, @model.creator %></td>
         </tr>
       <% end %>
       <% if @model.collection %>
@@ -59,6 +66,14 @@
           </td>
         </tr>
       <% end %>
+      <% if @model.sensitive %>
+        <tr>
+          <td><%= icon("explicit", Model.human_attribute_name(:sensitive)) %></td>
+          <td>
+            <%= Model.human_attribute_name(:sensitive) %>
+          </td>
+        </tr>
+      <% end %>
       <tr>
         <td><%= icon "folder", t(".path") %></td>
         <td>
@@ -75,8 +90,27 @@
     </table>
     <%= link_to safe_join([icon("pencil", t("general.edit")), t("general.edit")], " "), edit_model_path(@model), class: "btn btn-primary" if policy(@model).edit? %>
     <%= link_to safe_join([icon("trash", t("general.delete")), t("general.delete")], " "), model_path(@model), {method: :delete, class: "float-end btn btn-outline-danger", data: {confirm: translate("models.destroy.confirm")}} if policy(@model).destroy? %>
-    <%= render FollowButtonComponent.new(follower: current_user, target: @model) %>
   <% end %>
+
+  <div class="mb-3 w-100 text-center">
+    <div class="btn-group ml-auto mr-auto">
+      <%= link_to safe_join([icon("cloud-download", ""), t(".download.label")], " "), model_path(@model, format: @download_format), class: "btn btn-lg btn-primary", download: "download" %>
+      <button type="button" class="btn btn-lg btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="visually-hidden">Download options</span>
+      </button>
+      <ul class="dropdown-menu">
+        <li class="dropdown-header"><%= t(".download.menu_header") %></li>
+        <% if @has_supported_and_unsupported %>
+          <%= content_tag(:li) { link_to t(".download.supported"), model_path(@model, format: @download_format, selection: "supported"), class: "dropdown-item", download: "download" } %>
+          <%= content_tag(:li) { link_to t(".download.unsupported"), model_path(@model, format: @download_format, selection: "unsupported"), class: "dropdown-item", download: "download" } %>
+          <li><hr class="dropdown-divider"></li>
+        <% end %>
+        <% @extensions&.each do |type| %>
+          <%= content_tag(:li) { link_to t(".download.file_type", type: type.upcase), model_path(@model, format: @download_format, selection: type), class: "dropdown-item", download: "download" } %>
+        <% end %>
+      </ul>
+    </div>
+  </div>
 
   <% if !@model.parents.empty? && policy(@model).merge? %>
     <%= card :danger, t(".merge.heading") do %>
@@ -128,7 +162,7 @@
     </div>
   </div>
 
-  <% if policy(@model).edit? %>
+  <% if policy(@model).edit? && policy(:upload).create? %>
     <%= card :warning, t(".upload_card.heading") do %>
       <%= form_with url: model_model_files_path(@model), id: "upload-form", class: "d-grid" do |form| %>
 

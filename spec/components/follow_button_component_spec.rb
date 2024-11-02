@@ -22,12 +22,12 @@ RSpec.describe FollowButtonComponent, type: :component do
     end
 
     it "is labelled with the word Follow" do
-      expect(button).to include ">Follow"
+      expect(button).to include "Follow"
     end
 
     it "links to the create path for the target's follows resource" do # rubocop:todo RSpec/MultipleExpectations
       expect(button).to include "method=\"post\""
-      expect(button).to include "action=\"/creators/#{target.public_id}/follows\""
+      expect(button).to include "action=\"/creators/#{target.to_param}/follows\""
     end
   end
 
@@ -42,12 +42,12 @@ RSpec.describe FollowButtonComponent, type: :component do
     end
 
     it "is labelled with the word Unfollow" do
-      expect(button).to include ">Unfollow"
+      expect(button).to include "Unfollow"
     end
 
     it "links to the delete path for the target's follows resource" do # rubocop:todo RSpec/MultipleExpectations
       expect(button).to include "name=\"_method\" value=\"delete\""
-      expect(button).to include "action=\"/creators/#{target.public_id}/follows\""
+      expect(button).to include "action=\"/creators/#{target.to_param}/follows\""
     end
   end
 end

@@ -39,9 +39,8 @@ fr:
       previous: Précédent
       select_slide: Choisir l'image à afficher
       slide_label:
-    index:
-      actions_heading: Actions
-      bulk_edit: Edition en bloc
+    list:
+      bulk_edit:
       no_results_html:
       skip_models:
     merge:
@@ -60,6 +59,12 @@ fr:
     scan:
       success: Début de l'analyse du modèle
     show:
+      download:
+        file_type:
+        label:
+        menu_header:
+        supported:
+        unsupported:
       files: Fichiers
       files_card:
         bulk_edit: Modifier tous les fichiers

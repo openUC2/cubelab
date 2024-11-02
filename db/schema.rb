@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_25_110218) do
   create_table "caber_relations", force: :cascade do |t|
     t.string "subject_type"
     t.integer "subject_id"
@@ -39,6 +39,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.index ["name_lower"], name: "index_collections_on_name_lower"
     t.index ["public_id"], name: "index_collections_on_public_id"
     t.index ["slug"], name: "index_collections_on_slug", unique: true
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.string "public_id", null: false
+    t.string "commenter_type", null: false
+    t.integer "commenter_id", null: false
+    t.string "commentable_type", null: false
+    t.integer "commentable_id", null: false
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "system", default: false, null: false
+    t.boolean "sensitive", default: false, null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
+    t.index ["commenter_type", "commenter_id"], name: "index_comments_on_commenter"
+    t.index ["public_id"], name: "index_comments_on_public_id", unique: true
   end
 
   create_table "creators", force: :cascade do |t|
@@ -71,7 +87,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.index ["blocked"], name: "index_favorites_on_blocked"
     t.index ["favoritable_id", "favoritable_type"], name: "fk_favoritables"
     t.index ["favoritable_type", "favoritable_id", "favoritor_type", "favoritor_id", "scope"], name: "uniq_favorites__and_favoritables", unique: true
-    t.index ["favoritable_type", "favoritable_id"], name: "index_favorites_on_favoritable"
     t.index ["favoritor_id", "favoritor_type"], name: "fk_favorites"
     t.index ["favoritor_type", "favoritor_id"], name: "index_favorites_on_favoritor"
     t.index ["scope"], name: "index_favorites_on_scope"
@@ -84,8 +99,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.integer "actor_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "uuid"
     t.index ["actor_id"], name: "index_federails_activities_on_actor_id"
     t.index ["entity_type", "entity_id"], name: "index_federails_activities_on_entity"
+    t.index ["uuid"], name: "index_federails_activities_on_uuid", unique: true
   end
 
   create_table "federails_actors", force: :cascade do |t|
@@ -104,8 +121,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.string "entity_type", default: "User"
     t.text "public_key"
     t.text "private_key"
+    t.string "uuid"
     t.index ["entity_type", "entity_id"], name: "index_federails_actors_on_entity", unique: true
     t.index ["federated_url"], name: "index_federails_actors_on_federated_url", unique: true
+    t.index ["uuid"], name: "index_federails_actors_on_uuid", unique: true
   end
 
   create_table "federails_followings", force: :cascade do |t|
@@ -115,9 +134,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.string "federated_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "uuid"
     t.index ["actor_id", "target_actor_id"], name: "index_federails_followings_on_actor_id_and_target_actor_id", unique: true
-    t.index ["actor_id"], name: "index_federails_followings_on_actor_id"
     t.index ["target_actor_id"], name: "index_federails_followings_on_target_actor_id"
+    t.index ["uuid"], name: "index_federails_followings_on_uuid", unique: true
   end
 
   create_table "flipper_features", force: :cascade do |t|
@@ -200,6 +220,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.string "license"
     t.string "public_id"
     t.virtual "name_lower", type: :string, as: "LOWER(name)", stored: true
+    t.boolean "sensitive", default: false, null: false
     t.index ["collection_id"], name: "index_models_on_collection_id"
     t.index ["creator_id"], name: "index_models_on_creator_id"
     t.index ["library_id"], name: "index_models_on_library_id"
@@ -231,7 +252,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
-    t.index ["name"], name: "index_roles_on_name"
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
   end
 
@@ -253,13 +273,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.datetime "created_at", precision: nil
     t.index ["context"], name: "index_taggings_on_context"
     t.index ["tag_id", "taggable_id", "taggable_type", "context", "tagger_id", "tagger_type"], name: "taggings_idx", unique: true
-    t.index ["tag_id"], name: "index_taggings_on_tag_id"
     t.index ["taggable_id", "taggable_type", "context"], name: "taggings_taggable_context_idx"
     t.index ["taggable_id", "taggable_type", "tagger_id", "context"], name: "taggings_idy"
-    t.index ["taggable_id"], name: "index_taggings_on_taggable_id"
     t.index ["taggable_type"], name: "index_taggings_on_taggable_type"
     t.index ["tagger_id", "tagger_type"], name: "index_taggings_on_tagger_id_and_tagger_type"
-    t.index ["tagger_id"], name: "index_taggings_on_tagger_id"
   end
 
   create_table "tags", force: :cascade do |t|
@@ -279,7 +296,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.json "pagination_settings", default: {"models"=>true, "creators"=>true, "collections"=>true, "per_page"=>12}
     t.json "renderer_settings", default: {"grid_width"=>200, "grid_depth"=>200, "show_grid"=>true, "enable_pan_zoom"=>false, "background_colour"=>"#000000", "object_colour"=>"#cccccc", "render_style"=>"normals"}
     t.json "tag_cloud_settings", default: {"threshold"=>2, "heatmap"=>true, "keypair"=>true, "sorting"=>"frequency"}
-    t.json "problem_settings", default: {"missing"=>"danger", "empty"=>"info", "nesting"=>"warning", "inefficient"=>"info", "duplicate"=>"warning", "no_image"=>"silent", "no_3d_model"=>"silent", "non_manifold"=>"warning", "inside_out"=>"warning"}
+    t.json "problem_settings", default: {"missing"=>"danger", "empty"=>"info", "nesting"=>"warning", "inefficient"=>"info", "duplicate"=>"warning", "no_image"=>"silent", "no_3d_model"=>"silent", "non_manifold"=>"warning", "inside_out"=>"warning", "no_license"=>"silent", "no_links"=>"silent", "no_creator"=>"silent", "no_tags"=>"silent"}
     t.json "file_list_settings", default: {"hide_presupported_versions"=>true}
     t.string "reset_password_token"
     t.datetime "remember_created_at"
@@ -287,7 +304,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.string "interface_language"
     t.integer "failed_attempts", default: 0, null: false
     t.datetime "locked_at"
+    t.string "auth_provider"
+    t.string "auth_uid"
+    t.string "sensitive_content_handling"
+    t.string "public_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["public_id"], name: "index_users_on_public_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -297,7 +319,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_26_162407) do
     t.integer "role_id"
     t.index ["role_id"], name: "index_users_roles_on_role_id"
     t.index ["user_id", "role_id"], name: "index_users_roles_on_user_id_and_role_id"
-    t.index ["user_id"], name: "index_users_roles_on_user_id"
   end
 
   add_foreign_key "collections", "collections"

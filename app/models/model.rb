@@ -7,8 +7,9 @@ class Model < ApplicationRecord
   include Linkable
   include Sluggable
   include PublicIDable
+  include Commentable
 
-  acts_as_federails_actor username_field: :public_id, name_field: :name, profile_url_method: :url_for, actor_type: "Service", include_in_user_count: false
+  acts_as_federails_actor username_field: :public_id, name_field: :name, profile_url_method: :url_for, actor_type: "Service"
 
   scope :recent, -> { order(created_at: :desc) }
 
@@ -26,7 +27,9 @@ class Model < ApplicationRecord
   # In Rails 7.1 we will be able to do this instead:
   # normalizes :license, with: -> license { license.blank? ? nil : license }
 
+  after_create :post_creation_activity
   before_update :move_files, if: :need_to_move_files?
+  after_update :post_update_activity
   after_commit :check_integrity, on: :update
 
   validates :name, presence: true
@@ -49,10 +52,15 @@ class Model < ApplicationRecord
     relative_path = Pathname.new(path).relative_path_from(Pathname.new(target.path))
     # Move files
     model_files.each do |f|
-      f.update(
-        filename: File.join(relative_path, f.filename),
-        model: target
-      )
+      new_filename = File.join(relative_path, f.filename)
+      if target.model_files.exists?(filename: new_filename)
+        f.delete # Don't run callbacks, just remove the database record
+      else
+        f.update(
+          filename: new_filename,
+          model: target
+        )
+      end
     end
     Scan::CheckModelIntegrityJob.set(wait: 5.seconds).perform_later(target.id)
     reload
@@ -123,6 +131,36 @@ class Model < ApplicationRecord
     save!
   end
 
+  def split!(files: [])
+    new_model = dup
+    new_model.name = "Copy of #{name}"
+    new_model.public_id = nil
+    new_model.tags = tags
+    new_model.organize!
+    # Move files
+    files.each do |file|
+      file.update!(model: new_model)
+      file.reattach!
+    end
+    # Clear preview file appropriately
+    if files.include?(preview_file)
+      update!(preview_file: nil)
+    else
+      new_model.update!(preview_file: nil)
+    end
+    # Done!
+    new_model
+  end
+
+  def has_supported_and_unsupported?
+    model_files.where(presupported: true).count > 0 &&
+      model_files.where(presupported: false).count > 0
+  end
+
+  def file_extensions
+    model_files.map(&:extension).uniq
+  end
+
   private
 
   def normalize_license
@@ -173,5 +211,17 @@ class Model < ApplicationRecord
 
   def check_integrity
     Scan::CheckModelIntegrityJob.set(wait: 5.seconds).perform_later(id)
+  end
+
+  def post_creation_activity
+    if creator.present?
+      Activity::CreatorAddedModelJob.set(wait: 5.seconds).perform_later(id)
+    end
+  end
+
+  def post_update_activity
+    if creator_previously_changed?
+      Activity::CreatorAddedModelJob.set(wait: 5.seconds).perform_later(id)
+    end
   end
 end

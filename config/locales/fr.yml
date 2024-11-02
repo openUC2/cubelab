@@ -36,6 +36,7 @@ fr:
         notes: Description
         path: Chemin
         preview_file: Prévisualisation
+        sensitive:
         tags: Étiquettes
       model_file:
         caption: Légende
@@ -170,7 +171,6 @@ fr:
       description: Les entrées sont rejetées après %{retention_period}.
       message: Message
       name: Nom
-      sidekiq: Sidekiq
       time: Quand
       title: Activité récente
   activity_helper:
@@ -195,10 +195,6 @@ fr:
     caber_relations_form:
       add:
       permissions:
-    content_header:
-      sort:
-        name: Trier par nom
-        time: Trier par heure
     demo_mode: Cette instance est en mode démo. Vous ne pouvez pas ajouter ou supprimer des modèles, mais vous pouvez faire tout le reste.
     filters_card:
       missing_tags: Etiquette manquante
@@ -218,12 +214,15 @@ fr:
       community_heading: Communauté
       development_heading: Développement
       issues: Problèmes
-      logo: Logo
       open_source_html: Open Source sous <a href="https://github.com/manyfold3d/manyfold/blob/main/LICENSE.md" target="_blank" rel="license noopener">licence MIT.</a>
       social: Social
       sponsor: Sponsor
       stats_heading: Statistiques
       version: Version
+    link_fields:
+      url:
+        delete: Supprimer
+        placeholder:
     links_form:
       add: ajouter un autre lien
     navbar:
@@ -242,6 +241,10 @@ fr:
       search: Recherche
       settings: Paramètres
       upload: Télécharger
+    order_buttons:
+      sort:
+        name: Trier par nom
+        time: Trier par heure
     tag_list:
       unrelated_tag_count:
         one:
@@ -250,9 +253,26 @@ fr:
     tags_card:
       skip_tags: Sauter la liste des balises
     title: Manyfold
-  follow_button:
+  follow_button_component:
     follow:
     unfollow:
+  follows:
+    follow_remote_actor:
+      followed:
+    new:
+      help:
+      no_results:
+      results:
+      search:
+        placeholder:
+        submit: Recherche
+      title:
+    remote_follow:
+      help:
+      no_results_html:
+      placeholder:
+      submit:
+      title:
   general:
     delete: Supprimer
     download: Télécharger
@@ -267,8 +287,12 @@ fr:
       recent_activity: Activité récente
       search:
         placeholder: Que recherchez-vous ?
+        submit: Recherche
       update_actor:
   jobs:
+    activity:
+      creator_added_model:
+        comment:
     analysis:
       analyse_model_file:
         detect_duplicates: Détection des fichiers en double
@@ -309,6 +333,8 @@ fr:
         danger: Danger
         info: Information
       skip_to_content:
+    card_list_page:
+      actions_heading: Actions
   licenses:
     CC-BY-40: Creative Commons Attribution
     CC-BY-NC-40: Creative Commons Attribution NonCommercial
@@ -348,8 +374,8 @@ fr:
     thingiverse: Thingiverse
   views:
     pagination:
-      first: "&laquo; Premier"
-      last: Dernier &raquo;
-      next: Suivant &rsaquo;
-      previous: "&lsaquo; Précédent"
-      truncate: "&hellip;"
+      first: "« Premier"
+      last: Dernier »
+      next: Suivant ›
+      previous: "‹ Précédent"
+      truncate: "…"

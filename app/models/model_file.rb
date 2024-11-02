@@ -56,6 +56,14 @@ class ModelFile < ApplicationRecord
     SupportedMimeTypes.image_extensions.include? extension
   end
 
+  def is_video?
+    SupportedMimeTypes.video_extensions.include? extension
+  end
+
+  def is_document?
+    SupportedMimeTypes.document_extensions.include? extension
+  end
+
   def is_3d_model?
     SupportedMimeTypes.model_extensions.include? extension
   end
@@ -76,7 +84,7 @@ class ModelFile < ApplicationRecord
     File.join(model.path, filename)
   end
 
-  def attach_existing_file!(refresh: true)
+  def attach_existing_file!(refresh: true, skip_validations: false)
     return if attachment.present? || !exists_on_storage?
     attachment_attacher.set LibraryUploader.uploaded_file(
       storage: model.library.storage_key,
@@ -88,7 +96,7 @@ class ModelFile < ApplicationRecord
       }
     )
     attachment_attacher.refresh_metadata! if refresh
-    save!
+    save!(validate: !skip_validations)
   end
 
   def exists_on_storage?

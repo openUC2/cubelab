@@ -1,6 +1,9 @@
 ---
 es:
   settings:
+    admin_tools:
+      activeadmin: Administración avanzada
+      sidekiq: Sidekiq
     analysis_settings:
       description: Realiza un análisis profundo de la malla en los modelos. Estas opciones harán que tus escaneos tarden mucho más y utilicen considerablemente más CPU y memoria.
       heading: Análisis de mallas
@@ -36,6 +39,12 @@ es:
         autodetect: Utilizar la configuración del navegador
         help: 'Nota: es posible que algunos textos no traducidos sigan apareciendo en inglés.'
         label: Idioma de la aplicación
+      sensitive_content:
+        help: Afecta al modo en que se mostrará el contenido marcado como "sensible"
+        hide: Ocultar completamente
+        label: Contenido Sensible
+        mask: Desenfocar en las listas
+        show: Mostrar como normal
     library_settings:
       description: Ver detalles de la biblioteca y modificar.
       free_space:
@@ -54,8 +63,6 @@ es:
       details_html: Para cambiar esta configuración, edite las <a href='https://manyfold.app/sysadmin/configuration.html'>variables de entorno</a> del servidor y reinicie.
       heading: Multiusuario
       multiuser_mode: Manyfold se está ejecutando en modo multiusuario.
-      registrations_closed: El registro de usuarios está desactivado.
-      registrations_open: El registro de usuarios está activado.
       single_user_mode: Manyfold se está ejecutando en modo usuario único.
     pagination_settings:
       collections:
@@ -103,7 +110,6 @@ es:
       show_grid:
         label: Mostrar plano de tierra
     show:
-      advanced_admin: Administración avanzada
       submit: Guardar ajustes
       title: Ajustes
     tag_cloud_settings:

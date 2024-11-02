@@ -20,8 +20,9 @@ pl:
     get_creator:
       unknown: Nieznany
     index:
-      actions_heading: Akcje
       skip_creators: Pomiń listę twórców
+    show:
+      edit: Edytuj Profil Twórcy
     unassigned:
       caption: Wszystkie modele bez znanego twórcy.
       name: Nieprzypisany

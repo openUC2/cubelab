@@ -1,8 +1,7 @@
 require "fileutils"
 
 class ModelsController < ApplicationController
-  include Filterable
-  include TagListable
+  include ModelListable
   include Permittable
 
   before_action :get_model, except: [:bulk_edit, :bulk_update, :index, :new, :create]
@@ -13,46 +12,44 @@ class ModelsController < ApplicationController
   after_action :verify_policy_scoped, only: [:bulk_edit, :bulk_update]
 
   def index
-    # Work out policies for showing buttons up front
-    @can_destroy = policy(Model).destroy?
-    @can_edit = policy(Model).edit?
-
     @models = filtered_models @filters
-
-    # Ordering
-    @models = case session["order"]
-    when "recent"
-      @models.order(created_at: :desc)
-    else
-      @models.order(name_lower: :asc)
-    end
-
-    @tags, @unrelated_tag_count = generate_tag_list(@models, @filter_tags)
-    @tags, @kv_tags = split_key_value_tags(@tags)
-
-    if helpers.pagination_settings["models"]
-      page = params[:page] || 1
-      @models = @models.page(page).per(helpers.pagination_settings["per_page"])
-    end
-
-    # Load extra data
-    @models = @models.includes [:library, :model_files, :preview_file, :creator, :collection]
-
+    prepare_model_list
     render layout: "card_list_page"
   end
 
   def show
-    files = @model.model_files
-    @images = files.select(&:is_image?)
-    @images.unshift(@model.preview_file) if @images.delete(@model.preview_file)
-    if helpers.file_list_settings["hide_presupported_versions"]
-      hidden_ids = files.select(:presupported_version_id).where.not(presupported_version_id: nil)
-      files = files.where.not(id: hidden_ids)
+    respond_to do |format|
+      format.html do
+        files = @model.model_files
+        @images = files.select(&:is_image?)
+        @images.unshift(@model.preview_file) if @images.delete(@model.preview_file)
+        if helpers.file_list_settings["hide_presupported_versions"]
+          hidden_ids = files.select(:presupported_version_id).where.not(presupported_version_id: nil)
+          files = files.where.not(id: hidden_ids)
+        end
+        files = files.includes(:presupported_version, :problems)
+        files = files.reject(&:is_image?)
+        @groups = helpers.group(files)
+        @extensions = @model.file_extensions
+        @has_supported_and_unsupported = @model.has_supported_and_unsupported?
+        @download_format = :zip
+        render layout: "card_list_page"
+      end
+      format.zip do
+        tmpdir = LibraryUploader.find_storage(:cache).directory
+        filename = [
+          @model.slug,
+          params[:selection]
+        ].compact.join("-") + ".zip"
+        tmpfile = File.join(tmpdir, "#{@model.updated_at.to_time.to_i}-#{@model.id}-#{params[:selection]}.zip")
+        unless File.exist?(tmpfile)
+          files = file_list(@model, params[:selection])
+          write_archive(tmpfile, files)
+        end
+        send_file(tmpfile, filename: filename, type: :zip, disposition: :attachment)
+        # We will rely on Shrine to clean up the temp file
+      end
     end
-    files = files.includes(:presupported_version, :problems)
-    files = files.select(&:is_3d_model?)
-    @groups = helpers.group(files)
-    render layout: "card_list_page"
   end
 
   def new
@@ -169,6 +166,7 @@ class ModelsController < ApplicationController
       :new_library_id,
       :organize,
       :license,
+      :sensitive,
       add_tags: [],
       remove_tags: []
     ).compact_blank
@@ -183,6 +181,7 @@ class ModelsController < ApplicationController
       :caption,
       :notes,
       :license,
+      :sensitive,
       :collection_id,
       :q,
       :library,
@@ -218,5 +217,32 @@ class ModelsController < ApplicationController
 
   def clear_returnable
     session[:return_after_new] = nil
+  end
+
+  def file_list(model, selection)
+    case selection
+    when nil
+      model.model_files
+    when "supported"
+      model.model_files.where(presupported: true)
+    when "unsupported"
+      model.model_files.where(presupported: false)
+    else
+      model.model_files.select { |f| f.extension == selection }
+    end
+  end
+
+  def write_archive(filename, files)
+    Archive.write_open_filename(filename, Archive::COMPRESSION_COMPRESS, Archive::FORMAT_ZIP) do |archive|
+      files.each do |file|
+        archive.new_entry do |entry|
+          entry.pathname = file.filename
+          entry.size = file.size
+          entry.filetype = Archive::Entry::FILE
+          archive.write_header entry
+          archive.write_data file.attachment.read
+        end
+      end
+    end
   end
 end

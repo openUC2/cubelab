@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <title><%= translate("application.title") %><%= " : #{@title}" if @title %></title>
+    <title><%= @title || site_name %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= tag.meta name: "csp-nonce", content: content_security_policy_nonce if content_security_policy_nonce %>
     <%= favicon_link_tag "Artboard4@4x.png" %>
     <%= tag.link rel: "apple-touch-icon", href: asset_path("Artboard4@4x.png") %>
-    <%= tag.meta name: "apple-mobile-web-app-title", content: translate("application.title") %>
-    <%= javascript_include_tag "application", nonce: true %>
+    <%= tag.meta name: "apple-mobile-web-app-title", content: site_name %>
+    <%= javascript_include_tag "application", nonce: true, defer: true %>
     <%= stylesheet_link_tag "application", nonce: true %>
+    <%= yield :head %>
   </head>
 
   <body>

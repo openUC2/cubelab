@@ -3,6 +3,7 @@ require "support/mock_directory"
 
 RSpec.describe Model do
   it_behaves_like "Followable"
+  it_behaves_like "Commentable"
   it_behaves_like "Caber::Object"
   it_behaves_like "Sluggable"
 
@@ -100,8 +101,9 @@ RSpec.describe Model do
   context "when nested inside another" do
     around do |ex|
       MockDirectory.create([
-        "parent/part.stl",
-        "parent/child/part.stl"
+        "parent/parent_part.stl",
+        "parent/child/child_part.stl",
+        "parent/child/duplicate.stl"
       ]) do |path|
         @library_path = path
         ex.run
@@ -127,10 +129,10 @@ RSpec.describe Model do
 
     context "when merging into parent" do
       it "moves files" do # rubocop:todo RSpec/MultipleExpectations
-        file = create(:model_file, model: child, filename: "part.stl")
+        file = create(:model_file, model: child, filename: "child_part.stl")
         child.merge_into! parent
         file.reload
-        expect(file.filename).to eql "child/part.stl"
+        expect(file.filename).to eql "child/child_part.stl"
         expect(file.model).to eql parent
       end
 
@@ -138,6 +140,33 @@ RSpec.describe Model do
         expect {
           child.merge_into! parent
         }.to change(described_class, :count).from(2).to(1)
+      end
+    end
+
+    context "when merging models that have duplicated files" do
+      before do
+        create(:model_file, model: parent, filename: "parent_part.stl")
+        create(:model_file, model: parent, filename: "child/duplicate.stl")
+        create(:model_file, model: child, filename: "duplicate.stl")
+        create(:model_file, model: child, filename: "child_part.stl")
+      end
+
+      it "removes duplicated file" do
+        expect {
+          child.merge_into! parent
+        }.to change(ModelFile, :count).by(-1)
+      end
+
+      it "rehomes distinct file" do
+        child.merge_into! parent
+        expect(parent.model_files.exists?(filename: "child/child_part.stl")).to be true
+      end
+
+      it "keeps all real files intact" do
+        child.merge_into! parent
+        parent.model_files.each do |file|
+          expect(file.exists_on_storage?).to be true
+        end
       end
     end
   end
@@ -245,6 +274,63 @@ RSpec.describe Model do
     end
   end
 
+  context "when splitting" do
+    subject!(:model) {
+      m = create(:model, creator: create(:creator), collection: create(:collection), license: "CC-BY-4.0", caption: "test", notes: "note")
+      m.tag_list << "tag1"
+      m.tag_list << "tag2"
+      create(:model_file, model: m)
+      create(:model_file, model: m)
+      m
+    }
+
+    it "creates a new model" do
+      expect { model.split! }.to change(described_class, :count).by(1)
+    end
+
+    it "prepends 'Copy of' to name" do
+      new_model = model.split!
+      expect(new_model.name).to eq "Copy of #{model.name}"
+    end
+
+    [:notes, :caption, :collection, :creator, :license, :tags].each do |field|
+      it "copies old model #{field}" do
+        new_model = model.split!
+        expect(new_model.send(field)).to eq model.send(field)
+      end
+    end
+
+    it "creates an empty model if no files are specified" do
+      new_model = model.split!
+      expect(new_model.model_files).to be_empty
+    end
+
+    it "does not add or remove files" do
+      expect { model.split! }.not_to change(ModelFile, :count)
+    end
+
+    it "adds selected files to new model" do
+      new_model = model.split! files: [model.model_files.first]
+      expect(new_model.model_files.count).to eq 1
+    end
+
+    it "retains existing preview file for new model if selected for split" do # rubocop:todo RSpec/MultipleExpectations
+      file_to_split = model.model_files.first
+      model.update!(preview_file: file_to_split)
+      new_model = model.split! files: [file_to_split]
+      expect(new_model.preview_file).to eq file_to_split
+      expect(model.reload.preview_file).to be_nil
+    end
+
+    it "new model gets no preview file if not selected" do # rubocop:todo RSpec/MultipleExpectations
+      preview_file = model.model_files.first
+      model.update!(preview_file: preview_file)
+      new_model = model.split! files: [model.model_files.last]
+      expect(new_model.reload.preview_file).to be_nil
+      expect(model.preview_file).to eq preview_file
+    end
+  end
+
   context "with filesystem conflicts" do
     around do |ex|
       MockDirectory.create([
@@ -326,5 +412,46 @@ RSpec.describe Model do
       model.delete_from_disk_and_destroy
       expect(file).to have_received(:delete_from_disk_and_destroy).once
     end
+  end
+
+  context "when making changes" do
+    it "queues creator-specific model creation job when model is created if a creator is set" do
+      model = create(:model, creator: create(:creator))
+      expect(Activity::CreatorAddedModelJob).to have_been_enqueued.with(model.id).at_least(:once)
+    end
+
+    it "queues creator-specific model creation job when model is updated if a creator has changed" do
+      model = create(:model)
+      ActiveJob::Base.queue_adapter.enqueued_jobs.clear
+      model.update(creator: create(:creator))
+      expect(Activity::CreatorAddedModelJob).to have_been_enqueued.with(model.id).at_least(:once)
+    end
+  end
+
+  it "detects if a model has both supported and unsupported files" do
+    model = create(:model)
+    create(:model_file, model: model, presupported: true)
+    create(:model_file, model: model, presupported: false)
+    expect(model.has_supported_and_unsupported?).to be true
+  end
+
+  it "detects if a model has only supported files" do
+    model = create(:model)
+    create(:model_file, model: model, presupported: true)
+    expect(model.has_supported_and_unsupported?).to be false
+  end
+
+  it "detects if a model has only unsupported files" do
+    model = create(:model)
+    create(:model_file, model: model, presupported: false)
+    expect(model.has_supported_and_unsupported?).to be false
+  end
+
+  it "generates list of file extensions" do
+    model = create(:model)
+    create(:model_file, model: model, filename: "test.stl")
+    create(:model_file, model: model, filename: "test2.stl")
+    create(:model_file, model: model, filename: "test.obj")
+    expect(model.file_extensions.sort).to eq ["obj", "stl"]
   end
 end

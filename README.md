@@ -12,7 +12,9 @@ There are a few routes to get help:
 * [Live chat](https://matrix.to/#/#manyfold:one.ems.host) to the "team" on Matrix (an open Discord/Slack-like chat system).
 * Get in touch with our [social media](https://3dp.chat/@manyfold) presence in the Fediverse (Mastodon, etc).
 
-And, if you want to contribute financially to development efforts, you can do so at [Open Collective](https://opencollective.com/manyfold).
+And, if you want to contribute financially to development efforts...
+
+[<img src="https://opencollective.com/manyfold/donate/button@2x.png?color=blue" alt="Donate with OpenCollective" width="20%" />](https://opencollective.com/manyfold/donate)
 
 ## Developer Documentation
 
@@ -59,7 +61,7 @@ We use [Rubocop](https://rubocop.org/) to monitor adherence to coding standards 
 
 You can run the linter with `bundle exec rubocop`.
 
-We also have linters for ERB and Typescript files. You can run these with: `bundle exec erblint --lint-all` and `yarn run lint:ts` respectively.
+We also have linters for ERB and Typescript files. You can run these with: `bundle exec erb_lint --lint-all` and `yarn run lint:ts` respectively.
 
 Code linting is automatically performed by our GitHub Actions test runners, but if you set up [Husky](https://typicode.github.io/husky/get-started.html), it will also execute as a pre-commit hook.
 
@@ -100,3 +102,13 @@ This project is funded through [NGI0 Entrust](https://nlnet.nl/entrust), a fund 
 
 [<img src="https://nlnet.nl/logo/banner.png" alt="NLnet foundation logo" width="20%" />](https://nlnet.nl)
 [<img src="https://nlnet.nl/image/logos/NGI0_tag.svg" alt="NGI Zero Logo" width="20%" />](https://nlnet.nl/entrust)
+
+This project is also funded by you! Make a donation to support long-term development at OpenCollective:
+
+[<img src="https://opencollective.com/manyfold/donate/button@2x.png?color=blue" alt="Donate with OpenCollective" width="20%" />](https://opencollective.com/manyfold/donate)
+
+## Popularity
+
+Down the bottom because they're cool, but not important, here are some stats!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=manyfold3d/manyfold&type=Date)](https://star-history.com/#manyfold3d/manyfold&Date)

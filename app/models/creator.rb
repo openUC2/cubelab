@@ -4,8 +4,9 @@ class Creator < ApplicationRecord
   include Linkable
   include Sluggable
   include PublicIDable
+  include Commentable
 
-  acts_as_federails_actor username_field: :slug, name_field: :name, profile_url_method: :url_for, include_in_user_count: false
+  acts_as_federails_actor username_field: :slug, name_field: :name, profile_url_method: :url_for
 
   has_many :models, dependent: :nullify
   validates :name, uniqueness: {case_sensitive: false}
@@ -16,5 +17,13 @@ class Creator < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     ["links", "models"]
+  end
+
+  def to_param
+    slug
+  end
+
+  def self.find_param(param)
+    find_by!(slug: param)
   end
 end

@@ -1,4 +1,16 @@
 module ApplicationHelper
+  def site_name
+    ENV.fetch("SITE_NAME", translate("application.title"))
+  end
+
+  def site_tagline
+    ENV.fetch("SITE_TAGLINE", t("application.tagline"))
+  end
+
+  def site_icon
+    ENV.fetch("SITE_ICON", "roundel.svg")
+  end
+
   def icon(icon, label, id: nil)
     prefix = "bi"
     if icon.starts_with? "ra-"
@@ -33,8 +45,8 @@ module ApplicationHelper
   end
 
   def card(style, title = nil, options = {}, &content)
-    id = "card-#{SecureRandom.hex(4)}"
-    card_class = "card mb-4"
+    id = options[:id] || "card-#{SecureRandom.hex(4)}"
+    card_class = ["card", "mb-4", options[:class]].join(" ")
     if options[:skip_link]
       skiplink = skip_link(options[:skip_link][:target], options[:skip_link][:text])
       card_class += " skip-link-container"
@@ -178,5 +190,9 @@ module ApplicationHelper
 
   def problem_settings
     current_user&.problem_settings || Problem::DEFAULT_SEVERITIES
+  end
+
+  def needs_hiding?(thing)
+    thing.sensitive && (current_user.nil? || current_user.sensitive_content_handling.present?)
   end
 end

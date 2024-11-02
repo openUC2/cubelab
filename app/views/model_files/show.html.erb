@@ -1,3 +1,8 @@
+<% content_for :head do %>
+  <%= tag.meta property: "og:type", content: "website" %>
+  <%= tag.meta name: "fediverse:creator", content: @file.model.creator.actor.at_address if @file.model.creator %>
+<% end %>
+
 <%= render partial: "breadcrumb" %>
 <h1><%= @file.name %></h1>
 
@@ -6,6 +11,10 @@
   <div class="col-9">
     <% if @file.is_image? %>
       <%= image_tag model_model_file_path(@model, @file, format: @file.extension), alt: @file.name, style: "width: 100%" %>
+    <% elsif @file.is_video? %>
+      <%= video_tag model_model_file_path(@model, @file, format: @file.extension), alt: @file.name, style: "width: 100%", controls: true %>
+    <% elsif @file.is_document? %>
+      <%= tag.iframe src: model_model_file_path(@model, @file, format: @file.extension), alt: @file.name, style: "width: 100%; aspect-ratio: 0.707" %>
     <% elsif renderable?(@file.extension) %>
       <% if @file.presupported_version || @file.unsupported_version %>
         <ul class="nav nav-tabs">
@@ -61,8 +70,8 @@
 
     <%= render partial: "problem", collection: @file.problems.visible(problem_settings) %>
 
-    <%= card :secondary, t(".actions_heading") do %>
-      <%= link_to safe_join([icon("cloud-download", t("general.download")), t("general.download")], " "), model_model_file_path(@model, @file, @file.extension.to_sym, download: "true"), {class: "btn btn-secondary"} %>
+    <%= card :secondary, t("layouts.card_list_page.actions_heading") do %>
+      <%= link_to safe_join([icon("cloud-download", t("general.download")), t("general.download")], " "), model_model_file_path(@model, @file, @file.extension&.to_sym, download: "true"), {class: "btn btn-secondary", download: "download"} %>
       <% if policy(@file).edit? && ["stl", "obj"].include?(@file.extension) %>
         <%= link_to safe_join([icon("arrow-left-right", t(".convert")), t(".convert")], " "), model_model_files_path(@model, convert: {id: @file.to_param, to: "threemf"}), method: :post, class: "btn btn-warning" %>
       <% end %>

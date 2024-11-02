@@ -20,8 +20,9 @@ de:
     get_creator:
       unknown: Unbekannt
     index:
-      actions_heading: Aktionen
       skip_creators: Erstellerliste überspringen
+    show:
+      edit: Erstellerprofil bearbeiten
     unassigned:
       caption: Alle Modelle ohne bekannten Ersteller.
       name: Nicht zugewiesen

@@ -6,6 +6,7 @@ de:
       form_subtitle: 'Wähle die Änderungen aus, die du vornehmen möchtest:'
       select: Datei '%{name}' auswählen
       select_all: Alle Dateien auswählen
+      split: Ausgewählte Dateien in ein neues Modell aufteilen
       submit: Ausgewählte Dateien aktualisieren
       title: Dateien massenweise bearbeiten
     bulk_update:
@@ -22,7 +23,6 @@ de:
     general:
       edit: Dateiinformationen bearbeiten
     show:
-      actions_heading: Aktionen
       convert: zu 3MF konvertieren
       details_heading: Details
       notes_heading: Notizen

@@ -6,7 +6,8 @@ pl:
       form_subtitle: 'Wybierz zmiany do wprowadzenia:'
       select: Zaznacz plik '%{name}'
       select_all: Zaznacz wszystkie pliki
-      submit: Aktualizuj zaznaczone pliki
+      split: Rozdziel wybrane pliki na nowy model
+      submit: Zaktualizuj zaznaczone pliki
       title: Zbiorczo edytuj pliki
     bulk_update:
       success: Pliki zaktualizowane pomyślnie.
@@ -22,7 +23,6 @@ pl:
     general:
       edit: Edytuj informacje o pliku
     show:
-      actions_heading: Akcje
       convert: Konwertuj do 3MF
       details_heading: Szczegóły
       notes_heading: Notatki

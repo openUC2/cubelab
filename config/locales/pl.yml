@@ -10,7 +10,7 @@ pl:
       creator:
         caption: Napis
         name: Nazwa
-        notes: Notatki
+        notes: Opis
       library:
         caption: Napis
         icon: Ikona
@@ -36,6 +36,7 @@ pl:
         notes: Opis
         path: Ścieżka
         preview_file: Podgląd pliku
+        sensitive: Wrażliwa Treść
         tags: Tagi
       model_file:
         caption: Napis
@@ -170,7 +171,6 @@ pl:
       description: Wpisy są odrzucane po %{retention_period}.
       message: Wiadomość
       name: Nazwa
-      sidekiq: Sidekiq
       time: Kiedy
       title: Ostatnia aktywność
   activity_helper:
@@ -195,10 +195,6 @@ pl:
     caber_relations_form:
       add: dodaj kolejne uprawnienie
       permissions: Udostępnianie
-    content_header:
-      sort:
-        name: Sortuj według nazwy
-        time: Sortuj według czasu
     demo_mode: Ta instancja jest w trybie demonstracyjnym. Nie możesz dodawać ani usuwać modeli, ale możesz robić wszystko inne.
     filters_card:
       missing_tags: Brakujące tagi
@@ -218,12 +214,15 @@ pl:
       community_heading: Społeczność
       development_heading: Rozwój
       issues: Problemy
-      logo: Logo
       open_source_html: Projekt Open Source na <a href="https://github.com/manyfold3d/manyfold/blob/main/LICENSE.md" target="_blank" rel="license">licencji MIT</a>.
       social: Sociale
       sponsor: Sponsoruj
       stats_heading: Statystyki
       version: Wersja
+    link_fields:
+      url:
+        delete: Usuń
+        placeholder: Dowolna powiązana strona internetowa
     links_form:
       add: dodaj kolejny link
     navbar:
@@ -242,6 +241,10 @@ pl:
       search: Wyszukaj
       settings: Ustawienia
       upload: Prześlij
+    order_buttons:
+      sort:
+        name: Sortuj według nazwy
+        time: Sortuj według czasu
     tag_list:
       unrelated_tag_count:
         one: "%{count} niepowiązany tag ukryty"
@@ -250,9 +253,26 @@ pl:
     tags_card:
       skip_tags: Pomiń listę tagów
     title: Manyfold
-  follow_button:
+  follow_button_component:
     follow: Obserwuj %{name}
     unfollow: Przestań obserwować %{name}
+  follows:
+    follow_remote_actor:
+      followed: Pomyślnie zaczęto obserwować %{actor}
+    new:
+      help: Możesz obserwować publicznych twórców, kolekcje lub modele na innym serwerze Manyfold, a nawet każde publiczne konto w Fediverse! Wystarczy, że wpiszesz nazwę konta w polu wyszukiwania!
+      no_results: Przepraszamy, nie mogliśmy znaleźć niczego dla "%{query}". Czy jest to prawidłowe konto ActivityPub lub adres URL?
+      results: Wyniki wyszukiwania
+      search:
+        placeholder: Wprowadź konto Fediverse lub adres URL, np. admin@try.manyfold.app
+        submit: Wyszukaj
+      title: Śledź Fediverse
+    remote_follow:
+      help: Nie potrzebujesz konta na tym serwerze, aby obserwować %{name}; wprowadź tutaj nazwę swojego konta, a my odeślemy Cię do domu, aby zakończyć proces.
+      no_results_html: Nie mogliśmy znaleźć Twojego konta domowego; czy wprowadziłeś je poprawnie?
+      placeholder: Twoja nazwa użytkownika Fediverse, np. manyfold@3dp.chat
+      submit: Zabierz mnie do domu
+      title: Obserwuj %{name}
   general:
     delete: Usuń
     download: Pobierz
@@ -267,8 +287,12 @@ pl:
       recent_activity: Ostatnia Aktywność
       search:
         placeholder: Czego szukasz?
+        submit: Wyszukaj
       update_actor: zaktualizowany przez %{name} %{time} temu
   jobs:
+    activity:
+      creator_added_model:
+        comment: 'Właśnie dodałem(-am) nowy model: ["%{model_name}"](%{url})'
     analysis:
       analyse_model_file:
         detect_duplicates: Wykrywanie zduplikowanych plików
@@ -309,6 +333,8 @@ pl:
         danger: Niebezpieczeństwo
         info: Informacja
       skip_to_content: Przejdź do głównej treści
+    card_list_page:
+      actions_heading: Akcje
   licenses:
     CC-BY-40: Creative Commons Uznanie autorstwa
     CC-BY-NC-40: Creative Commons Uznanie autorstwa-Użycie niekomercyjne

@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class='container-fluid'>
     <a class="navbar-brand ms-2" href="<%= root_path %>" aria-label="<%= translate ".home" %>">
-      <%= image_tag "Artboard4@4x.png", alt: translate("application.title"), height: "40px", class: "me-2" %>
-      <span class="d-lg-none"><%= t "application.title" %></span>
+      <%= image_tag "Artboard4@4x.png", alt: site_name, height: "40px", class: "me-2" %>
+      <span class="d-lg-none"><%= site_name %></span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="<%= translate ".navbar.toggler.label" %>">
       <span class="navbar-toggler-icon"></span>
@@ -30,9 +30,6 @@
         <% end %>
       </ul>
       <ul class="navbar-nav col-6 pe-4 align-self-start justify-content-end">
-        <li class="nav-item">
-          <%= nav_link "plus-circle", t("libraries.general.new"), new_library_path, text_style: "d-lg-none" if policy(:library).new? %>
-        </li>
         <li class="nav-item">
           <%= nav_link "upload", t(".upload"), new_model_path, style: "btn btn-warning btn-sm me-1 mt-lg-1" if policy(:upload).index? %>
         </li>
