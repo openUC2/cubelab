@@ -7,11 +7,12 @@ services:
       - 3214:3214
     volumes:
       #- /Users/bene/Downloads/UC2-GIT-master/CAD/RAW/STL:/libraries
-      - /root/Downloads:/libraries
+      - /home/ubuntu/Downloads:/libraries
     environment:
       PUID: 1000 # The ID of the user the app will run as
       PGID: 1000 # The ID of the group the app will run as
-      SECRET_KEY_BASE: a_nice_long_random_string
+      SECRET_KEY_BASE_old: a_nice_long_random_string
+      SECRET_KEY_BASE: .
       REDIS_URL: redis://redis:6379/1
 
       # Database connection details; we recommend using a separate PostgreSQL
@@ -33,6 +34,17 @@ services:
 
       # For details of other optional environment variables, including features such
       # as multiuser mode, visit https://manyfold.app/sysadmin/configuration.html
+      REGISTRATION: enabled
+      MULTIUSER: enabled
+      SITE_NAME: cubeLab
+      SITE_TAGLINE: Helping you keep track of your optics files
+      SITE_LOGO: https://cubelab.openuc2.com/assets/Artboard4@4x-bbc4c5b0cecb2966499f49ff94b29b4f7e98caa25ca53da491cbe6c00c971ea0.png
+      SMTP_SERVER: smtp.mail.de
+      SMTP_USERNAME: cubelab@mail.de
+      SMTP_PASSWORD: .
+      PUBLIC_HOSTNAME: cubelab.openuc2.com
+      PUBLIC_PORT: 80
+
     depends_on:
       - postgres
       - redis
@@ -41,6 +53,17 @@ services:
     links:
       - postgres
       - redis
+
+    # Optional, but recommended for better security
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETUID
+      - SETGID
 
   postgres:
     image: postgres:15
